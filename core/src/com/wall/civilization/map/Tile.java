@@ -5,12 +5,14 @@ import java.util.Random;
 public class Tile {
 
 	public enum TileType {
-		PLAINS, HILLS, OCEAN
+		PLAINS, HILLS, DESERT, OCEAN
 	};
 
 	public static final String PLAINS_PATH = "plains.png";
 	public static final String HILLS_PATH = "hills.png";
+	public static final String DESERT_PATH = "desert.png";
 	public static final String OCEAN_PATH = "ocean.png";
+
 
 	public final static int WIDTH = 64;
 	public final static int HEIGHT = 64;
@@ -26,28 +28,35 @@ public class Tile {
 		// Used to try and get tiles to be somewhat similar
 		double plains = Math.random() / 1.5f;
 		double hills = Math.random()/ 1.5f;
+		double desert = Math.random() / 1.5f;
 		
 		// Check to the left of tile
 		if(left == TileType.PLAINS)
 			plains += Math.random();
-		else
+		else if(left == TileType.HILLS)
 			hills += Math.random();
+		else
+			desert += Math.random();
 		
 		// Check the up
 		if(down == TileType.PLAINS)
 			plains += Math.random();
-		else
+		else if(down == TileType.HILLS)
 			hills += Math.random();
-		
-		if(plains > hills)
-			tile = TileType.PLAINS;
 		else
+			desert += Math.random();
+		
+		if(plains > hills && plains > desert)
+			tile = TileType.PLAINS;
+		else if(hills > plains && hills > desert)
 			tile = TileType.HILLS;
+		else
+			tile = TileType.DESERT;
 	}
 
 	// Completely random tile, but not ocean, ocean gen is later
 	public Tile(Random rand) {
-		tile = TileType.values()[rand.nextInt(2)];
+		tile = TileType.values()[rand.nextInt(TileType.values().length - 1)];
 	}
 
 	public TileType getTile() {

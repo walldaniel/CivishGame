@@ -4,11 +4,17 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.wall.civilization.map.Map;
 
 public class Civ extends ApplicationAdapter {
-	public static final int MAP_SIZE = 50;
+	public static final int SCREEN_WIDTH = 600;
+	public static final int SCREEN_HEIGHT = 480;
+	
+	public static final int MAP_SIZE = 30;
+	
+	private OrthographicCamera cam;
 	
 	SpriteBatch sb;
 	Map map;
@@ -24,6 +30,11 @@ public class Civ extends ApplicationAdapter {
 	@Override
 	public void create () {
 		sb = new SpriteBatch();
+		
+		// Stuff for camera
+		cam = new OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT * (SCREEN_WIDTH / SCREEN_HEIGHT));
+		cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
+		cam.update();
 		
 		map = new Map(MAP_SIZE, MAP_SIZE);
 	}
@@ -45,11 +56,11 @@ public class Civ extends ApplicationAdapter {
 		
 		// Get mouse scrolling
 		if(Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {	// The equals key is same as plus
-			if(zoom > 0.2f)
-				zoom -= 0.02f;
+			if(cam.zoom > 0.15f)
+				cam.zoom -= 0.03f;
 		} else if(Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
-			if(zoom < 2.5f)
-				zoom += 0.02f;
+			if(cam.zoom < 4f)
+				cam.zoom += 0.03f;
 		}
 		
 		// Get mouse movement
@@ -69,9 +80,11 @@ public class Civ extends ApplicationAdapter {
 		
 		// Get updates
 		update(Gdx.graphics.getDeltaTime());
+		cam.update();
+		sb.setProjectionMatrix(cam.combined);
 		
 		// Draw the map
-		map.drawMap(sb, x, y, zoom);
+		map.drawMap(sb, x, y);
 	}
 	
 	@Override
