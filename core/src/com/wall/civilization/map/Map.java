@@ -78,8 +78,8 @@ public class Map {
 	public void drawMap(SpriteBatch sb, float posX, float posY, float dt) {
 		float currentX = posX, currentY = posY;
 		
-		System.out.println("pos x - " + posX);
-		System.out.println("pos y - " + posY);
+		System.out.print("pos x - " + posX);
+		System.out.println("\tpos y - " + posY);
 		
 		for (int i = 0; i < tiles.length; i++) {
 			for (int j = 0; j < tiles[i].length; j++) {
