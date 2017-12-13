@@ -78,13 +78,16 @@ public class Civ extends ApplicationAdapter {
 		// Clear the screen
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 		
+		sb.begin();
 		// Get updates
 		update(Gdx.graphics.getDeltaTime());
 		cam.update();
 		sb.setProjectionMatrix(cam.combined);
 		
 		// Draw the map
-		map.drawMap(sb, x, y);
+		map.drawMap(sb, x, y, Gdx.graphics.getDeltaTime());
+		
+		sb.end();
 	}
 	
 	@Override

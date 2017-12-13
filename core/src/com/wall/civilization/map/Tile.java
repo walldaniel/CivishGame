@@ -9,9 +9,10 @@ public class Tile {
 	};
 
 	public static final String PLAINS_PATH = "plains.png";
-	public static final String HILLS_PATH = "hills.png";
+	public static final String HILLS_PATH = "hills.jpg";
 	public static final String DESERT_PATH = "desert.png";
-	public static final String OCEAN_PATH = "ocean.png";
+	public static final String OCEAN_ONE_PATH = "ocean1.png";
+	public static final String OCEAN_TWO_PATH = "ocean2.png";
 
 
 	public final static int WIDTH = 64;
