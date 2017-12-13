@@ -5,14 +5,15 @@ import java.util.Random;
 public class Tile {
 
 	public enum TileType {
-		PLAINS, HILLS, DESERT, OCEAN
+		PLAINS, HILLS, DESERT, OCEAN, COAST
 	};
 
 	public static final String PLAINS_PATH = "plains.png";
 	public static final String HILLS_PATH = "hills.jpg";
 	public static final String DESERT_PATH = "desert.png";
-	public static final String OCEAN_ONE_PATH = "ocean1.png";
-	public static final String OCEAN_TWO_PATH = "ocean2.png";
+	public static final String OCEAN_ONE_PATH = "oceans1.png";
+	public static final String OCEAN_TWO_PATH = "oceans2.png";
+	public static final String COAST_PATH = "coast.png";
 
 
 	public final static int WIDTH = 64;
@@ -57,7 +58,7 @@ public class Tile {
 
 	// Completely random tile, but not ocean, ocean gen is later
 	public Tile(Random rand) {
-		tile = TileType.values()[rand.nextInt(TileType.values().length - 1)];
+		tile = TileType.values()[rand.nextInt(TileType.values().length - 2)];
 	}
 
 	public TileType getTile() {

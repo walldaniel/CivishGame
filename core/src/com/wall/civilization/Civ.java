@@ -42,31 +42,31 @@ public class Civ extends ApplicationAdapter {
 	public void update(float dt) {
 		// Arrow keys map move
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-			x += dt * 125f;
+			x += dt * 125f * cam.zoom;
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-			x -= dt * 125f;
+			x -= dt * 125f * cam.zoom;
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			y -= dt * 125f;
+			y -= dt * 125f * cam.zoom;
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-			y += dt * 125f;
+			y += dt * 125f * cam.zoom;
 		}
 		
 		// Get mouse scrolling
 		if(Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {	// The equals key is same as plus
-			if(cam.zoom > 0.15f)
+			if(cam.zoom > 1f)
 				cam.zoom -= 0.03f;
 		} else if(Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
-			if(cam.zoom < 4f)
+			if(cam.zoom < 6f)
 				cam.zoom += 0.03f;
 		}
 		
 		// Get mouse movement
 		if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-			x += Gdx.input.getDeltaX() * 2.1f;
-			y -= Gdx.input.getDeltaY() * 2.1f;
+			x += Gdx.input.getDeltaX() * 2.1f * cam.zoom;
+			y -= Gdx.input.getDeltaY() * 2.1f * cam.zoom;
 		}
 		
 		mouseX = Gdx.input.getX();
