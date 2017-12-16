@@ -15,6 +15,8 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.wall.civilization.map.Map;
 import com.wall.civilization.map.Tile;
 
@@ -32,14 +34,14 @@ public class Civ extends ApplicationAdapter {
 	float x = 0;
 	float y = 0;
 
-	float mouseX = 0;
-	float mouseY = 0;
+	private Vector2 mouseCoords;
+	private Vector3 mapCoords;
 
 	private TiledMap map;
 	private MapLayers layers;
 	private TiledMapTileLayer layer1;
 	private Texture tiles;
-	private TextureRegion region;
+	private TextureRegion plains, forest;
 	private OrthogonalTiledMapRenderer renderer;
 
 	@Override
@@ -54,13 +56,14 @@ public class Civ extends ApplicationAdapter {
 
 		tiles = new Texture(Tile.PLAINS_PATH);
 		plains = new TextureRegion(tiles, 0, 0, 128, 128);
+		forest = new TextureRegion(tiles, 0, 128, 128, 128);
 		map = new TiledMap();
 		layers = map.getLayers();
 		layer1 = new TiledMapTileLayer(30, 30, 128, 128);
 
 		TiledMapTileLayer.Cell[] cells = { new TiledMapTileLayer.Cell(), new TiledMapTileLayer.Cell() };
-		cells[0].setTile(new StaticTiledMapTile(region));
-		cells[1].setTile(new StaticTiledMapTile(region));
+		cells[0].setTile(new StaticTiledMapTile(plains));
+		cells[1].setTile(new StaticTiledMapTile(forest));
 		layer1.setCell(0, 1, cells[0]);
 		for (int i = 1; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
@@ -72,13 +75,35 @@ public class Civ extends ApplicationAdapter {
 
 		renderer = new OrthogonalTiledMapRenderer(map);
 		renderer.setView(cam);
+		
+		mouseCoords = new Vector2();
+		mapCoords = new Vector3();
 		// map = new Map(MAP_SIZE, MAP_SIZE);
 	}
 
+//	@Override
+//	public boolean mouseMoved(int screenX, int screenY) {
+//
+//	    //screenX, screenY - Mouse Coords
+//
+//	    Vector2 centerPosition = new Vector2(mouseX, mouseY));
+//
+//	    Vector3 worldCoordinates = new Vector3(screenX, y, screenY,0);
+//	    cam.unproject(worldCoordinates);
+//
+//	    Vector2 mouseLoc = new Vector2(worldCoordinates.x, worldCoordinates.y);
+//
+//	    Vector2 direction = mouseLoc.sub(centerPosition);
+//	    float mouseAngle  = direction.angle();
+//	    setRotation(mouseAngle);
+//
+//	    return true;
+//	}
+	
 	public void update(float dt) {
 		// Get map movement, if mouse is activated don't let arrow keys move map
 		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-			cam.translate(-Gdx.input.getDeltaX() * cam.zoom, -Gdx.input.getDeltaY() * cam.zoom);
+			cam.translate(-Gdx.input.getDeltaX() * 2f * cam.zoom, -Gdx.input.getDeltaY() * 2f * cam.zoom);
 		} else {
 			// Arrow keys map move
 			if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
@@ -104,26 +129,31 @@ public class Civ extends ApplicationAdapter {
 				cam.zoom += 0.03f;
 		}
 
-		mouseX = Gdx.input.getX();
-		mouseY = Gdx.input.getY();
+		mouseCoords.x = Gdx.input.getX();
+		mouseCoords.y = Gdx.input.getY();
+		
+		mapCoords.x = mouseCoords.x;
+		mapCoords.y = mouseCoords.y;
 	}
 
 	@Override
 	public void render() {
 		update(Gdx.graphics.getDeltaTime());
 		// Print out mouse coords
-		// System.out.println("Tile: " + (int) ((mouseX - x - (128 * (cam.zoom - 1f))) /
-		// (128 / cam.zoom)) + ", "
-		// + (int) ((SCREEN_HEIGHT - mouseY - y - (128 * (cam.zoom - 1f))) / (128 /
-		// cam.zoom)));
-		//
-		// System.out.println(cam.zoom + " - " + mouseX + " - " + mouseY);
+//		System.out.print("Tile: " + (int) ((mouseX + (cam.position.x - 300) - (64f * (cam.zoom - 1f))) / (128 / cam.zoom))
+//				+ ", " + (int) ((mouseY + (cam.position.y -240) - (128f * (cam.zoom - 1f))) / (128 / cam.zoom)));
+//
+//		System.out.println("\t- " + cam.zoom + "\t- " + mouseX + "\t- " + mouseY + "\t- ");
+
 		Gdx.gl.glClearColor(100f / 255f, 100f / 255f, 250f / 255f, 1f);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
 		cam.update();
 		renderer.setView(cam);
 		renderer.render();
+		cam.unproject(mapCoords);
+		
+		System.out.println("Tile: " + (int) (mapCoords.x / 128) + "\t- " + (int) (mapCoords.y / 128));
 
 	}
 
