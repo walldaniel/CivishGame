@@ -39,32 +39,24 @@ public class PlayState extends State {
 		// Only move with either keys or mouse at one time
 		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
 			// Translate the map by how much the mouse is moved
-			cam.translate(-Gdx.input.getDeltaX() * 2.1f * cam.zoom, -Gdx.input.getDeltaY() * 2.1f * cam.zoom);
+			cam.translate(-Gdx.input.getDeltaX() * cam.zoom, -Gdx.input.getDeltaY() * cam.zoom);
 		} else {
-			// Make sure the user doesn't see beyond the map
-			if (cam.position.x > 640) {						// Left
-				cam.position.x = Civ.SCREEN_WIDTH / 2f;
-			} else if (cam.position.x < mapSize * 128 + Civ.SCREEN_WIDTH / 2f) {	// Right
-				cam.position.x = mapSize * 128 - Civ.SCREEN_WIDTH / 2f;
-			} else if (cam.position.x > 360) {				// Up
-				cam.position.y = Civ.SCREEN_HEIGHT / 2f;
-			} else if (cam.position.x < mapSize * 128 - Civ.SCREEN_HEIGHT / 2f) {				// Down
-				cam.position.y = mapSize * 128 - Civ.SCREEN_HEIGHT / 2f;
-			} else {
-				// Arrow keys move map
-				if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-					cam.translate(-mapVelocity * dt * cam.zoom, 0);
-				}
-				if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-					cam.translate(mapVelocity * dt * cam.zoom, 0);
-				}
-				if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-					cam.translate(0, mapVelocity * dt * cam.zoom);
-				}
-				if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-					cam.translate(0, -mapVelocity * dt * cam.zoom);
-				}
+			// TODO: Make sure user cannot go outside of map
+			
+			// Arrow keys move map
+			if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+				cam.translate(-mapVelocity * dt * cam.zoom, 0);
 			}
+			if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+				cam.translate(mapVelocity * dt * cam.zoom, 0);
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+				cam.translate(0, mapVelocity * dt * cam.zoom);
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+				cam.translate(0, -mapVelocity * dt * cam.zoom);
+			}
+
 		}
 
 		// Zooming
@@ -72,10 +64,10 @@ public class PlayState extends State {
 			if (cam.zoom > 0.75f)
 				cam.zoom -= 0.03f;
 		} else if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
-			if (cam.zoom < 50f)
+			if (cam.zoom < 8f)
 				cam.zoom += 0.03f;
 		}
-		System.out.println(cam.position);
+//		System.out.println(cam.position);
 	}
 
 	@Override
@@ -92,15 +84,17 @@ public class PlayState extends State {
 		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
 			int tileX = (int) mapCoords.x / 128;
 			int tileY = (int) mapCoords.y / 128;
+			System.out.println(tileX + " - " + tileY);
 
 			// Check to make sure that the mouse is on the map
-			if (tileX >= 0 && tileX < mapSize) {
-
+			if (tileX >= 0 && tileX < mapSize && tileY >= 0 && tileY < mapSize) {
+				// TODO: Make the cell slightly different not delete
+				map.highlightSquare(tileX, tileY);
 			}
 		}
 		// Print out the current tile the mouse is selected on
-		// System.out.println("Tile: " + (int) (mapCoords.x / 128) + "\t- " + (int)
-		// (mapCoords.y / 128));
+		 System.out.println("Tile: " + (int) (mapCoords.x / 128) + "\t- " + (int)
+		 (mapCoords.y / 128));
 	}
 
 	@Override
@@ -109,7 +103,6 @@ public class PlayState extends State {
 		sb.setProjectionMatrix(cam.combined);
 
 		// Draw the map
-
 		map.drawMap(cam);
 	}
 
