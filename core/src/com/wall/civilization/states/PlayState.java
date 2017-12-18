@@ -18,6 +18,8 @@ public class PlayState extends State {
 	private float mapVelocity = 250f;
 	private int mapSize = 25;
 
+	private boolean pressed = false;
+
 	public PlayState(GameStateManager gsm) {
 		super(gsm);
 
@@ -42,7 +44,7 @@ public class PlayState extends State {
 			cam.translate(-Gdx.input.getDeltaX() * cam.zoom, -Gdx.input.getDeltaY() * cam.zoom);
 		} else {
 			// TODO: Make sure user cannot go outside of map
-			
+
 			// Arrow keys move map
 			if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
 				cam.translate(-mapVelocity * dt * cam.zoom, 0);
@@ -67,7 +69,7 @@ public class PlayState extends State {
 			if (cam.zoom < 8f)
 				cam.zoom += 0.03f;
 		}
-//		System.out.println(cam.position);
+		// System.out.println(cam.position);
 	}
 
 	@Override
@@ -81,7 +83,8 @@ public class PlayState extends State {
 		// Get coordinates of where mouse is on map
 		cam.unproject(mapCoords);
 
-		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+		if (!pressed && Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+			pressed = true;
 			int tileX = (int) mapCoords.x / 128;
 			int tileY = (int) mapCoords.y / 128;
 			System.out.println(tileX + " - " + tileY);
@@ -91,10 +94,12 @@ public class PlayState extends State {
 				// TODO: Make the cell slightly different not delete
 				map.highlightSquare(tileX, tileY);
 			}
+		} else if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+			pressed = false;
 		}
 		// Print out the current tile the mouse is selected on
-		 System.out.println("Tile: " + (int) (mapCoords.x / 128) + "\t- " + (int)
-		 (mapCoords.y / 128));
+		// System.out.println("Tile: " + (int) (mapCoords.x / 128) + "\t- " + (int)
+		// (mapCoords.y / 128));
 	}
 
 	@Override

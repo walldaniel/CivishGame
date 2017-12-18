@@ -19,6 +19,7 @@ public class Map {
 	private TiledMap tiledMap;
 	private MapLayers layers;
 	private TiledMapTileLayer groundLayer;
+	private TiledMapTileLayer selectionLayer;
 	private TiledMapTileSet tileset;
 
 	private OrthogonalTiledMapRenderer renderer;
@@ -26,7 +27,8 @@ public class Map {
 	private Texture tileMap;
 	private TextureRegion[] tiles;
 
-	private HighlightedTile highlightedTile;
+	private int highlightedX = 0, highLightedY = 0;
+	private Texture selectionTile;
 
 	public Map(int mapSize, OrthographicCamera cam) {
 		// Create tile objects
@@ -46,12 +48,14 @@ public class Map {
 		// Generate the tiles on the map
 		generateMap();
 
+		// Selection layer stuff
+		selectionLayer = new TiledMapTileLayer(mapSize, mapSize, 128, 128);
+		layers.add(selectionLayer);
+		selectionTile = new Texture("selection_tile.png");
+		
 		// Set camera to tile map renderer
 		renderer = new OrthogonalTiledMapRenderer(tiledMap);
 		renderer.setView(cam);
-
-		// Create the Highlighted tile
-		highlightedTile = new HighlightedTile(-1, -1, null);
 	}
 
 	private void generateMap() {
@@ -83,49 +87,20 @@ public class Map {
 		renderer.render();
 	}
 
+	// Set the selection layer tile above selected to one with high alpha nd white
 	public void highlightSquare(int x, int y) {
-		// Set the old tile back to normal, check if it has been made yet
-		if (highlightedTile.x != -1 || highlightedTile.y != -1 || highlightedTile.cell != null)
-			groundLayer.setCell(highlightedTile.x, highlightedTile.y, highlightedTile.cell);
-
-		// Set the new new tile to what it is, and the highlighted tile to stuff
-		highlightedTile.cell = (Cell) copy(groundLayer.getCell(x, y));
-		highlightedTile.x = x;
-		highlightedTile.y = y;
-
-		Pixmap pixmap = highlightedTile.cell.getTile().getTextureRegion().getTexture().getTextureData().consumePixmap();
-		int colorAffinity = 1;
-		int colorBlade = 1;
-		int colorEdge = 1;
-		int colorGrip = 1;
-
-		for (int i = 0; i < pixmap.getHeight(); i++) {
-			for (int j = 0; j < pixmap.getWidth(); j++) {
-				Color color = new Color();
-				Color.rgba8888ToColor(color, pixmap.getPixel(x, y));
-				
-				color.set(color.r, color.g, color.b, 0.5f);
-				
-				pixmap.setColor(color);
-				pixmap.fillRectangle(i, j, 1, 1);
-			}
-		}
-
-		 groundLayer.setCell(x, y, highlightedTile.cell.getTile());
-	}
-
-	public Object copy(Object obj) {
-		return obj;
-	}
-
-	private class HighlightedTile {
-		public int x, y;
-		public Cell cell;
-
-		public HighlightedTile(int x, int y, Cell cell) {
-			this.x = x;
-			this.y = y;
-			this.cell = cell;
-		}
+		// First set old highlighted one back to nothing
+		selectionLayer.setCell(highlightedX, highLightedY, null);
+		
+		// Set tile in selection layer to indicate which tile is selected
+		Cell cell = new Cell();
+		// Create tile with high alpha
+		cell.setTile(new StaticTiledMapTile(new TextureRegion(selectionTile)));
+		// Add to layer
+		selectionLayer.setCell(x, y, cell);
+		
+		// Save the old x and y
+		highlightedX = x;
+		highLightedY = y;
 	}
 }
