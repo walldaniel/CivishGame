@@ -18,19 +18,20 @@ public class Map {
 	private Random rand;
 
 	private TiledMap tiledMap;
+	private OrthogonalTiledMapRenderer renderer;
+	
 	private MapLayers layers;
 	private TiledMapTileLayer groundLayer;
 	private TiledMapTileLayer selectionLayer;
-	private TiledMapTileSet tileset;
-	private int[][] numberLayer;
-
-	private OrthogonalTiledMapRenderer renderer;
+	private TiledMapTileLayer unitLayer;
 
 	private Texture tileMap;
+	private TiledMapTileSet tileset;
 	private TextureRegion[] tiles;
 
 	private int highlightedX = 0, highLightedY = 0;
 	private Texture selectionTile;
+	private int[][] numberLayer;
 
 	public Map(int mapSize, OrthographicCamera cam) {
 		rand = new Random();
@@ -57,7 +58,7 @@ public class Map {
 		layers = tiledMap.getLayers();
 		groundLayer = new TiledMapTileLayer(mapSize, mapSize, 128, 128);
 		numberLayer = new int[groundLayer.getHeight()][groundLayer.getWidth()]; // Used to remember which tiles are where more easily
-
+		
 		// Generate the tiles on the map
 		generateMap();
 
@@ -66,6 +67,10 @@ public class Map {
 		layers.add(selectionLayer);
 		selectionTile = new Texture("selection_tile.png");
 
+		// Unit layer stuff, make sure it is in correct order
+		unitLayer = new TiledMapTileLayer(mapSize, mapSize, 128, 128);
+		layers.add(unitLayer);
+		
 		// Set camera to tile map renderer
 		renderer = new OrthogonalTiledMapRenderer(tiledMap);
 		renderer.setView(cam);
@@ -160,7 +165,8 @@ public class Map {
 	}
 
 	private void addOceans() {
-		for (int i = rand.nextInt(5); i > 0; i--) {
+		// Between 1 and 5 oceans spawn
+		for (int i = rand.nextInt(4) + 1; i > 0; i--) {
 			oceanFill(rand.nextInt(groundLayer.getWidth()), rand.nextInt(groundLayer.getHeight()), 0f);
 		}
 	}
@@ -180,6 +186,13 @@ public class Map {
 		}
 	}
 
+	public void changeUnitLocation(Texture texture, int oldX, int oldY, int newX, int newY) {
+		unitLayer.setCell(oldX, oldY, null);
+		Cell cell = new Cell();
+		cell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
+		unitLayer.setCell(newX, newY, cell);
+	}
+	
 	// Draw the map to the camera/display
 	public void drawMap(OrthographicCamera cam) {
 		renderer.setView(cam);

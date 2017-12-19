@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.wall.civilization.Civ;
 import com.wall.civilization.map.Map;
+import com.wall.civilization.unit.Civilization;
+import com.wall.civilization.unit.Unit;
 
 public class PlayState extends State {
 
@@ -19,6 +21,9 @@ public class PlayState extends State {
 	private int mapSize = 25;
 
 	private boolean pressed = false;
+	
+	private Civilization civ;
+	private Unit unit;
 
 	public PlayState(GameStateManager gsm) {
 		super(gsm);
@@ -34,6 +39,10 @@ public class PlayState extends State {
 		mouseCoords = new Vector2();
 		mapCoords = new Vector3();
 
+		// Add civ with one unit
+		civ = new Civilization("Germany");
+		civ.addUnit();
+		map.changeUnitLocation(civ.getTexture(), 0, 0, 0, 0);
 	}
 
 	@Override
@@ -87,12 +96,22 @@ public class PlayState extends State {
 			pressed = true;
 			int tileX = (int) mapCoords.x / 128;
 			int tileY = (int) mapCoords.y / 128;
-			System.out.println(tileX + " - " + tileY);
 
 			// Check to make sure that the mouse is on the map
 			if (tileX >= 0 && tileX < mapSize && tileY >= 0 && tileY < mapSize) {
-				// TODO: Make the cell slightly different not delete
 				map.highlightSquare(tileX, tileY);
+				
+				// Check if their is a unit on the tile
+				if(unit == null) {
+					unit = civ.getUnit(tileX, tileY);
+				} else {
+					map.changeUnitLocation(civ.getTexture(), unit.getX(), unit.getY(), tileX, tileY);
+					unit.setX(tileX);
+					unit.setY(tileY);
+					
+					// Unselect the unit
+					unit = null;
+				}
 			}
 		} else if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
 			pressed = false;
