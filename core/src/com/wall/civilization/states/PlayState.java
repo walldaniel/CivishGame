@@ -5,10 +5,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.wall.civilization.Civ;
+import com.wall.civilization.Player;
 import com.wall.civilization.map.Map;
-import com.wall.civilization.unit.Civilization;
 import com.wall.civilization.unit.Unit;
+import com.wall.civilization.unit.UnitBackend;
 
 public class PlayState extends State {
 
@@ -18,13 +18,13 @@ public class PlayState extends State {
 	private Vector3 mapCoords;
 
 	private float mapVelocity = 250f;
-	private int mapSize = 25;
+	public static final int MAPSIZE = 25;
 
 	private boolean pressed = false;
-	
-	private Civilization civ;
-	private Unit unit;
 
+	private UnitBackend units;
+	private Player player;
+	
 	public PlayState(GameStateManager gsm) {
 		super(gsm);
 
@@ -33,16 +33,18 @@ public class PlayState extends State {
 		cam.setToOrtho(true, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		// Create the map
-		map = new Map(mapSize, cam);
+		map = new Map(MAPSIZE, cam);
 
 		// Create the objects that store the coords of mouse and map
 		mouseCoords = new Vector2();
 		mapCoords = new Vector3();
 
-		// Add civ with one unit
-		civ = new Civilization("Germany");
-		civ.addUnit();
-		map.changeUnitLocation(civ.getTexture(), 0, 0, 0, 0);
+		// Add the list of the units
+		units = new UnitBackend("units.png");	// TODO change the string to a constant
+		
+		// Add a player with one unit to the map
+		player = new Player();
+		player.addUnit(new Unit("worker", 0, 0, units));
 	}
 
 	@Override
@@ -98,20 +100,20 @@ public class PlayState extends State {
 			int tileY = (int) mapCoords.y / 128;
 
 			// Check to make sure that the mouse is on the map
-			if (tileX >= 0 && tileX < mapSize && tileY >= 0 && tileY < mapSize) {
+			if (tileX >= 0 && tileX < MAPSIZE && tileY >= 0 && tileY < MAPSIZE) {
 				map.highlightSquare(tileX, tileY);
 				
 				// Check if their is a unit on the tile
-				if(unit == null) {
-					unit = civ.getUnit(tileX, tileY);
-				} else {
-					map.changeUnitLocation(civ.getTexture(), unit.getX(), unit.getY(), tileX, tileY);
-					unit.setX(tileX);
-					unit.setY(tileY);
-					
-					// Unselect the unit
-					unit = null;
-				}
+//				if(unit == null) {
+//					unit = civ.getUnit(tileX, tileY);
+//				} else {
+//					map.changeUnitLocation(civ.getTexture(), unit.getX(), unit.getY(), tileX, tileY);
+//					unit.setX(tileX);
+//					unit.setY(tileY);
+//					
+//					// Unselect the unit
+//					unit = null;
+//				}
 			}
 		} else if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
 			pressed = false;
@@ -120,7 +122,7 @@ public class PlayState extends State {
 		// System.out.println("Tile: " + (int) (mapCoords.x / 128) + "\t- " + (int)
 		// (mapCoords.y / 128));
 	}
-
+	
 	@Override
 	public void render(SpriteBatch sb) {
 		cam.update();

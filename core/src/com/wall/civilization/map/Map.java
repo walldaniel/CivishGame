@@ -215,4 +215,35 @@ public class Map {
 		highlightedX = x;
 		highLightedY = y;
 	}
+	
+	// Check to see if unit is already there, probably more efficient this way
+	public boolean checkLocation(int x, int y, Cell cell) {
+		if(unitLayer.getCell(x, y).equals(cell)) {
+			return true;
+		}
+		return false;
+	}
+	
+	// Returns true if no unit is on location
+	public boolean checkLocation(int x, int y) {
+		if(unitLayer.getCell(x, y) == null)
+			return true;
+		
+		return false;
+	}
+	
+	// Removes the unit on a specific tile
+	public void removeUnitLocation(int x, int y) {
+		unitLayer.setCell(x, y, null);
+	}
+	
+	// Draw a unit somewhere, if a possible unit is already there then don't
+	public boolean setUnitLocation(int x, int y, Cell cell) {
+		if(unitLayer.getCell(x, y) == null) {
+			unitLayer.setCell(x, y, cell);
+			return true;
+		}
+		
+		return false;
+	}
 }
